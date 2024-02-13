@@ -12,7 +12,6 @@ app.use(cors());
 app.use(express.json());
 const userService = new UserService();
 app.post("/login", async (req, res) => {
-    // npx prisma migrate dev
     const {user_name, password} = req.body;
     const user=await userService.logInUser(user_name, password);
     res.send(user);
