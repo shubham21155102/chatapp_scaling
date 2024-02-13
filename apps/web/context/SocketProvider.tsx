@@ -59,7 +59,11 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
     
 
     useEffect(() => {
-        const _socket = io("http://localhost:8000");
+        const _socket = io("http://localhost:8000",{
+            auth: {
+                userId: "123"
+            }
+        });
         _socket.on("message", onMessageReceived);
         setSocket(_socket);
         return () => {

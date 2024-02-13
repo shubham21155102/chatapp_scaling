@@ -80,7 +80,6 @@ Learn more about the power of Turborepo:
 - [Configuration Options](https://turbo.build/repo/docs/reference/configuration)
 - [CLI Usage](https://turbo.build/repo/docs/reference/command-line-reference)
 
-
 # Realtime Chat App
 
 Tech Stack
@@ -112,4 +111,3 @@ E[User 4]--socket.io-->F[Server 2]
 F-->I[Pub/Sub Arch]-->G[Redis-Aiven]
 B-->I-->G
 ```
-# chatapp_scaling

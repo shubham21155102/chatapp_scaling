@@ -33,17 +33,20 @@ class SocketService {
     public initListeners() {
         const io = this.io;
         console.log("Init Listeners....")
-        io.on("connect", (socket) => {
+        io.on("connect", (socket:any) => {
 
             console.log("New client connected with socket id: ", socket.id);
+            const userId = socket.handshake.auth.userId;
+            console.log("User connected with id: ", userId);
+            socket.data.userId = userId;
             socket.on("event:message", async ({ message }: { message: string }) => {
                 console.log("Message received: ", message);
-                // socket.emit("event:message", { message: "Message received" });
-                await pub.publish("MESSAGES", JSON.stringify({ message }));
+                socket.emit("event:message", { message: "Message received" });
+                await pub.publish("MESSAGES", JSON.stringify({ message }),);
 
             });
         });
-        sub.on("message",async (channel, message) => {
+        sub.on("message",async (channel:any, message:any) => {
             if (channel !== "MESSAGES") return;
             console.log("Message received from redis: ", message);
             io.emit("message", JSON.parse(message));

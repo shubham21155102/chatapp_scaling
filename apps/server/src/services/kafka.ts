@@ -39,7 +39,7 @@ export async function produceMessage(message: string) {
     })
 
 }
-export async function startMessageConsumers() {
+export async function startMessageConsumers(user_id:any) {
     const consumer = kafka.consumer({ groupId: "default" });
     await consumer.connect();
     await consumer.subscribe({ topic: "MESSAGES" });
@@ -50,9 +50,19 @@ export async function startMessageConsumers() {
 
             if (message.value !== null && message.value !== undefined) {
                 try {
+                    const findMessage=await prismaClient.messages.findFirst({
+                        where:{
+                            userId:user_id,
+                        }
+                    });
+                    if(findMessage){
+                        let messages=findMessage.message;
+                        messages=messages+message.value.toString();
+                    }
                     await prismaClient.messages.create({
                         data: {
                             message: message.value.toString(),
+                            userId:user_id,
                         },
                     });
                 } catch (e) {
@@ -61,7 +71,7 @@ export async function startMessageConsumers() {
                     setTimeout(() => {
                         console.log("Resuming");
                         consumer.resume([{ topic: "MESSAGES" }])
-                        // pause();
+                        pause();
                     }
                         , 10000);
                 }

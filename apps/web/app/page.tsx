@@ -1,60 +1,97 @@
 "use client"
-import React, { useState, useEffect } from 'react';
-import { useSocket } from '../context/SocketProvider';
+import React, { useEffect, useState } from "react";
+import "./page.module.css";
+import { useRouter } from "next/navigation";
 
+const LoginGlassmorphism: React.FC = () => {
+  const router = useRouter();
+  const [userName, setUserName] = useState("");
+  const [password, setPassword] = useState("");
+  const [userId, setUserId] = useState("");
+  const [loggedIn, setLoggedIn] = useState("");
 
+  const logInSubmit = async (e: any) => {
+    e.preventDefault();
+    const data = await fetch("http://localhost:8000/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        user_name: userName,
+        password: password
+      })
+    });
+    const response = await data.json();
+    console.log(response);
+    if (response.status === 200) {
+      console.log("success");
+      setUserId(response.data.id);
+      setLoggedIn("true");
+      router.push("/chat"); 
+    }
+  };
 
-
-
-const Chat = () => {
-  const { sendMessage,messages } = useSocket();
-  const [userQuestion, setUserQuestion] = useState('');
-
-  // const submitQuestion = (e:any) => {
-  //  sendMessage(userQuestion);
-  //   setUserQuestion('');
-  // };
-
+  useEffect(() => {
+    localStorage.setItem("userId", userId);
+    localStorage.setItem("userName", userName);
+    localStorage.setItem("loggedIn", loggedIn);
+  }, [userId, userName]);
 
   return (
-    <div style={{ display: 'flex' }}>
-      <div style={{ flex: 1, width: '100%', height: '100vh', display: 'flex', flexDirection: 'row' }}>
-        <div style={{ width: '100%', backgroundColor: 'white' }}>
-          <div style={{ width: '100%', height: '100%', backgroundColor: '#f0f0f0', display: 'flex', flexDirection: 'column' }}>
-            <div id="qa-outer-container" style={{ flex: 1, overflowY: 'scroll', marginBottom: '10px' }}>
-              {
-                messages?.map((message, index) => (
-                  <div key={index} style={{ padding: '10px', backgroundColor: '#f0f0f0', display: 'flex', flexDirection: 'column' }}>
-                    <div style={{ padding: '5px', backgroundColor: 'white', borderRadius: '4px',color:"black" }}>
-                      {message}
-                    </div>
+    <div>
+      {loggedIn==="true" ? (
+        <></>
+      ) : (
+        <>
+          <div>
+            <section>
+              <div className="color"></div>
+              <div className="color"></div>
+              <div className="color"></div>
+              <div className="box">
+                <div className="square" style={{ "--i": 0 }}></div>
+                <div className="square" style={{ "--i": 1 }}></div>
+                <div className="square" style={{ "--i": 2 }}></div>
+                <div className="square" style={{ "--i": 3 }}></div>
+                <div className="square" style={{ "--i": 4 }}></div>
+                <div className="container">
+                  <div className="form">
+                    <h2>Login</h2>
+                    <form onSubmit={logInSubmit}>
+                      <div className="inputBox">
+                        <input
+                          type="text"
+                          placeholder="username"
+                          onChange={(e) => {
+                            setUserName(e.target.value);
+                          }}
+                        />
+                      </div>
+                      <div className="inputBox">
+                        <input
+                          type="text"
+                          placeholder="password"
+                          onChange={(e) => setPassword(e.target.value)}
+                        />
+                      </div>
+                      <div className="inputBox">
+                        <input type="submit" value="Log In" />
+                      </div>
+                      <p className="forget">
+                        Don't have an account ?{" "}
+                        <a href="/register">Sign up</a>
+                      </p>
+                    </form>
                   </div>
-                ))
-              }
-            </div>
-
-            <form onSubmit={((e:any)=>{
-              e.preventDefault();
-              sendMessage(userQuestion);
-              console.log("submitQuestion",userQuestion);
-              // submitQuestion;
-            })} style={{ borderTop: '1px solid #ccc', padding: '10px', display: 'flex', alignItems: 'center', position: 'sticky', bottom: 0, backgroundColor: 'white' }}>
-              <input
-                type="text"
-                placeholder="Send message"
-                style={{ flex: 1, padding: '5px' }}
-                value={userQuestion}
-                onChange={(e) => setUserQuestion(e.target.value)}
-              />
-              <button type="submit" style={{ padding: '5px 10px', backgroundColor: '#007bff', color: 'white', border: 'none', borderRadius: '4px' }}>
-                Submit
-              </button>
-            </form>
+                </div>
+              </div>
+            </section>
           </div>
-        </div>
-      </div>
+        </>
+      )}
     </div>
   );
 };
 
-export default Chat;
+export default LoginGlassmorphism;
